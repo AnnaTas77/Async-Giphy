@@ -1,1 +1,1 @@
-getDogImages(endpointDog);
+getRandomImage("cat");

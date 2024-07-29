@@ -1,51 +1,53 @@
-require("dotenv").config();
+// require("dotenv").config();
 
-const endpointCat = `https://api.giphy.com/v1/gifs/search?api_key=${process.env.API_KEY}&q=cat&limit=25&offset=0&rating=g&lang=en&bundle=messaging_non_clips`;
-const endpointDog = `https://api.giphy.com/v1/gifs/search?api_key=${process.env.API_KEY}&q=dog&limit=25&offset=0&rating=g&lang=en&bundle=messaging_non_clips`;
+// const endpointDog = `https://api.giphy.com/v1/gifs/search?api_key=${process.env.API_KEY}&q=dog&limit=25&offset=0&rating=g&lang=en&bundle=messaging_non_clips`;
 
-async function getCatImages(query) {
-  const response = await fetch(query);
+async function getImages(query) {
+  const endpoint = `https://api.giphy.com/v1/gifs/search?api_key=f8S7v61L29ztOLryQpAbtBZQL0Ldk9IP&q=${query}&limit=25&offset=0&rating=g&lang=en&bundle=messaging_non_clips`;
+  const response = await fetch(endpoint);
   const responseData = await response.json();
 
   const singleGifImageURL = responseData.data[0].url;
 
-  console.log("Cat image: ", singleGifImageURL);
+  console.log(`Gif Image URL for ${query}: ${singleGifImageURL}`);
 }
 
-async function getDogImages(query) {
-  const response = await fetch(query);
+//BONUS TASK
+
+const allImagesArray = [];
+
+async function getRandomImage(query) {
+  const randomEndpoint = `https://api.giphy.com/v1/gifs/search?api_key=f8S7v61L29ztOLryQpAbtBZQL0Ldk9IP&q=${query}&limit=25&offset=0&rating=g&lang=en&bundle=messaging_non_clips`;
+
+  const response = await fetch(randomEndpoint);
   const responseData = await response.json();
-
-  const singleGifImageURL = responseData.data[0].url;
-
-  console.log("Dog image: ", singleGifImageURL);
-}
-
-//BONUS
-
-const allCatsArray = [];
-
-async function getRandomCatImage(query) {
-  const response = await fetch(query);
-  const responseData = await response.json();
-
-  const randomNum = Math.floor(Math.random() * 25);
 
   const responseArray = responseData.data;
-  responseArray.forEach((cat) => {
-    allCatsArray.push(cat);
+  const randomNum = Math.floor(Math.random() * responseArray.length);
+
+  responseArray.forEach((item) => {
+    allImagesArray.push(item);
   });
 
-  //   console.log(allCatsArray.length)
+  const randomImageURL = responseData.data[randomNum].images.original.url;
 
-  const randomCatImageURL = responseData.data[randomNum].url;
-
-  console.log("Random cat image: ", randomCatImageURL);
+  console.log(`Random Image URL for ${query}: ${randomImageURL}`);
+  return randomImageURL;
 }
 
-getCatImages(endpointCat);
-getDogImages(endpointDog);
-getRandomCatImage(endpointCat);
+getImages("dog");
+getRandomImage("cat");
+
+const button = document.querySelector("button");
+const imageContainer = document.querySelector(".image-container");
+
+const handleClick = async () => {
+  const randomCatImageURL = await getRandomImage("cat");
+  console.log(randomCatImageURL);
+  imageContainer.innerHTML = `<img src=${randomCatImageURL}>`;
+};
+
+button.addEventListener("click", handleClick);
 
 // Print out value of API key stored in .env file
 // console.log(process.env.API_KEY);
